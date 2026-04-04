@@ -1,0 +1,37 @@
+# 忽略 Python 缓存
+__pycache__/
+*.py[cod]
+
+# 忽略 Trae 自身的配置和临时文件
+.trae/
+.tmp/
+**/.tmp/
+*.tmp
+
+# 忽略数据文件夹（如果里面是日志或数据库备份）
+data/
+**/data/*
+**/data/
+logs/
+#Joy data
+joytool/joy_exp
+joytool/parquet
+joytool/excel
+joytool/csv
+accounts/
+joyenv/
+
+# 忽略项目根目录下的 .env
+.env
+
+# 忽略任何子目录下的 .env (比如 joyenv/.env)
+**/.env
+
+# 忽略其他常见的敏感文件和文件夹
+.venv/
+joyenv/
+*.key
+config/secrets.json
+
+# 忽略joyenv目录下的任何文件
+joyenv/
