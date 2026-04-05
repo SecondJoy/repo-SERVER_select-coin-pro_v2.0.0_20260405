@@ -15,5 +15,5 @@ CONFIG = {
     "amp_beta": 1.0,
     "penalty_dd": 0.5,
     "penalty_zz": 0.5,
-    "do_visual": True,
+    "do_visual": False,   #Joyupdated : No need visual on server
 }

@@ -21,11 +21,11 @@ from core.strategy_loader import load_strategy_by_backtest_name
 # ====================================================================================================
 
 # 选币数据的存放路径，同中性项目
-LOCAL_DATA_ROOT = r'D:\quantclass-data\coin-binance-spot-swap-preprocess-pkl-1h-2026-04-02'
+LOCAL_DATA_ROOT = '/home/ubuntu/datacenter/data/preprocess_1h_resample/0m/joymerged'
 
 # 用于绘图的数据路径
 #SWAP_1M_PARQUET_PATH = '/Users/jinjuo/Desktop/RctFiles/data/swap_1m_parquet'   # "/home/jinjuo/Rct/data/swap_1m_parquet"
-SWAP_1M_PARQUET_PATH = r'D:\quantclass-data\coin-binance-spot-swap-preprocess-pkl-1h-2026-04-02\swap_dict.pkl'
+SWAP_1M_PARQUET_PATH = '/home/ubuntu/datacenter/data/preprocess_1h_resample/0m/joymerged/swap_dict.pkl'
 pre_data_path = LOCAL_DATA_ROOT
 
 
