@@ -13,6 +13,7 @@ data/
 **/data/*
 **/data/
 logs/
+*.log
 #Joy data
 joytool/joy_exp
 joytool/parquet
