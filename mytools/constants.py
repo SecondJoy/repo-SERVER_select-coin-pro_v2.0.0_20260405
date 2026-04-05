@@ -1,3 +1,4 @@
+#JoyAdded 马代代码
 FACTOR_ASCENDING_MAPPING = {
     "QuoteVolumeMean": True,
     "ILLQStd": True,
