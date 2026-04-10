@@ -9,6 +9,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 import time
 import copy
 import traceback
+from datetime import datetime
 
 # Add project root to sys.path
 PROJECT_ROOT = Path(__file__).parent.absolute()
@@ -37,7 +38,8 @@ class UserConfig:
     
     # 回测时间范围
     START_DATE = '2024-01-01 00:00:00'
-    END_DATE = '2026-01-01 00:00:00'
+    #END_DATE = '2026-01-01 00:00:00'
+    END_DATE = datetime.now().strftime('%Y-%m-%d %H:00:00')  # 回测结束时间  #JoyUpdated
     
     # --- 2. 选币配置 ---
     # 选币数量
@@ -47,7 +49,7 @@ class UserConfig:
     
     # --- 3. 并行执行配置 ---
     # 并行进程数 (根据CPU核心数调整)
-    MAX_WORKERS = 4
+    MAX_WORKERS = 2
     
     # --- 4. 结果标识 ---
     # 迭代轮次名称 (用于区分不同的回测批次)
@@ -191,8 +193,25 @@ def process_single_task(factor_name, n, eval_config_dict, select_config=None):
         # Eval params
         eval_bars = eval_config_dict.get('bars', 72)
         eval_period = eval_config_dict.get('kline_period', '1h')
-        eval_paths = {'kline_parquet': eval_config_dict['kline_root']}
-        
+
+        #JoyTestStart
+        # JoyChange 20260409 原因：评估阶段兼容kline_root为swap_dict.pkl（dict: symbol->DataFrame），避免误当目录导致Not a directory
+        kroot = eval_config_dict.get('kline_root')
+        eval_paths = {}
+        if isinstance(kroot, str) and kroot.lower().endswith('.pkl') and os.path.isfile(kroot):
+            try:
+                _kdata = pd.read_pickle(kroot)
+                if isinstance(_kdata, dict):
+                    eval_paths['kline_dict'] = _kdata
+                    eval_paths['kline_parquet'] = None
+                else:
+                    eval_paths['kline_parquet'] = kroot
+            except Exception:
+                eval_paths['kline_parquet'] = kroot
+        else:
+            eval_paths['kline_parquet'] = kroot
+        #JoyTestEnd
+
         fr = compute_forward_eff_amp(
             picks_unique, 
             eval_paths, 

@@ -71,7 +71,7 @@ def main():
     )
     ap.add_argument(
         "--out-root",
-        default="/home/ubuntu/datacenter/data/preprocess_1h_resample/0m/joymerged",
+        default="/home/ubuntu/datacenter/data/preprocess_1h_resample/joymerged_0m",
         help="输出目录（生成 swap_dict.pkl / spot_dict.pkl）",
     )
     ap.add_argument(

@@ -39,12 +39,28 @@ def load_coin_cap(file_path: str, candle_df: pd.DataFrame, save_cols: list, symb
 
     # 读取数据
     extra_df_list = []
+    loaded_from_pkl = False  # JoyChange 20260409
     for file_path in all_file_paths:
         try:
             extra_df = pd.read_csv(file_path, encoding='gbk', skiprows=1, parse_dates=['candle_begin_time'])
             extra_df_list.append(extra_df)
         except Exception as e:
             continue
+
+    #JoyTestStart
+    # JoyChange 20260409 原因：在不影响原 CSV 逻辑的前提下，找不到 CSV 时回退读取 datacenter 产出的 coin_cap pkl
+    if not extra_df_list:
+        for s in symbols:
+            pkl_path = data_path / f'{s.replace("-", "")}.pkl'
+            if not pkl_path.exists():
+                continue
+            try:
+                extra_df = pd.read_pickle(pkl_path)
+                extra_df_list.append(extra_df)
+                loaded_from_pkl = True
+            except Exception:
+                continue
+    #JoyTestEnd
 
     if not extra_df_list:
         logger.warning(f'coin_cap 没有找到任何数据，symbol={symbols}')
@@ -69,9 +85,15 @@ def load_coin_cap(file_path: str, candle_df: pd.DataFrame, save_cols: list, symb
     # 处理 cmc 数据中的 usd_price与close 数据的不一致
     # 例：
     # 1000SATS usd_price = 0.0000001， 但是close = 0.0001
-    times = merge_df['close'] / merge_df['usd_price']
-    times = times.map(lambda x: 10 ** np.log10(x).round(0))
-    times = [times.mode().iloc[0] if times.notna().sum() > 0 else np.nan] * len(merge_df)
+    #JoyTestStart
+    # JoyChange 20260409 原因：兼容 coin_cap pkl 可能缺失 usd_price，避免 KeyError，同时保持原 CSV 逻辑不变
+    if 'usd_price' in merge_df.columns:
+        times = merge_df['close'] / merge_df['usd_price']
+        times = times.map(lambda x: 10 ** np.log10(x).round(0))
+        times = [times.mode().iloc[0] if times.notna().sum() > 0 else np.nan] * len(merge_df)
+    else:
+        times = [1] * len(merge_df) if loaded_from_pkl else [np.nan] * len(merge_df)
+    #JoyTestEnd
 
     # 筛选指定列
     columns = save_cols if save_cols else merge_df.columns

@@ -9,7 +9,11 @@ import os
 # 📝 只需要在这里修改你的数据文件夹路径
 # ==========================================
 #DATA_DIR = r'C:\Users\Public\0_QTclass\BBcode\select-coin-pro_v2.0.0_20260403\data\回测结果\测试策略1'  # 或者用 '.' 表示当前目录
-DATA_DIR = r'D:\quantclass-data\coin-binance-spot-swap-preprocess-pkl-1h-2026-04-02'  # 或者用 '.' 表示当前目录
+#DATA_DIR = r'D:\quantclass-data\coin-binance-spot-swap-preprocess-pkl-1h-2026-04-02'  # 或者用 '.' 表示当前目录
+DATA_DIR = r'/home/ubuntu/SERVER_select-coin-pro_v2.0.0_20260405/data/回测结果/测试策略1/'  # 或者用 '.' 表示当前目录
+
+
+
 
 def main():
     # 1. 设置 Pandas 显示选项

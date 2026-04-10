@@ -21,11 +21,11 @@ from core.strategy_loader import load_strategy_by_backtest_name
 # ====================================================================================================
 
 # 选币数据的存放路径，同中性项目
-LOCAL_DATA_ROOT = '/home/ubuntu/datacenter/data/preprocess_1h_resample/joymerged_0m'  #Joy
+LOCAL_DATA_ROOT = '/home/ubuntu/datacenter/data/preprocess_1h_resample/joymerged_0m'
 
 # 用于绘图的数据路径
 #SWAP_1M_PARQUET_PATH = '/Users/jinjuo/Desktop/RctFiles/data/swap_1m_parquet'   # "/home/jinjuo/Rct/data/swap_1m_parquet"
-SWAP_1M_PARQUET_PATH = '/home/ubuntu/datacenter/data/preprocess_1h_resample/joymerged_0m/swap_dict.pkl'  #Joy
+SWAP_1M_PARQUET_PATH = '/home/ubuntu/datacenter/data/preprocess_1h_resample/joymerged_0m/swap_dict.pkl'
 pre_data_path = LOCAL_DATA_ROOT
 
 
@@ -41,51 +41,21 @@ pre_data_path = LOCAL_DATA_ROOT
 
 # ** 额外数据 **
 # 当且仅当用到额外数据的因子时候，该配置才需要配置，且自动生效
-#data_source_dict = {
-    # 数据源的标签: ('加载数据的函数名', '数据存储的绝对路径')
-    # 说明：数据源的标签,需要与因子文件中的 extra_data_dict 中的 key 保持一致，数据存储的路径需要表达清楚
-    # 市值数据： https://www.quantclass.cn/data/coin/coin-cap
-#    "coin-cap": ('load_coin_cap', '/home/ubuntu/datacenter/data/coin_cap',),   #Joy
-    # 现货1h币对分类数据：https://www.quantclass.cn/data/coin/coin-binance-candle-csv-1h
-    # 也可以使用合约：https://www.quantclass.cn/data/coin/coin-binance-swap-candle-csv-1h
-    #"coin-btc": ('load_coin_btc', '/Users/xxxx/Downloads/coin-binance-candle-csv-1h',),   #Joy
-#    "coin-btc": ('load_coin_btc', '/home/ubuntu/datacenter/data/binance_swap_1h_resample/0m',),   #Joy
-#}
-
-# ====================================================================================================
-# ** 数据配置 **
-# ====================================================================================================
-realtime_data_path = '/home/ubuntu/datacenter/data/'  # 实盘数据路径
-min_kline_num = 168  # 最少上市多久，不满该K线根数的币剔除，即剔除刚刚上市的新币。168：标识168个小时，即：7*24
-get_kline_num = 500  # 获取多少根K线。这里跟策略日频和小时频影响。日线策略，代表多少根日线k。小时策略，代表多少根小时k
-data_config = dict(
-    realtime_data_path=realtime_data_path,  # 实盘数据路径
-    min_kline_num=min_kline_num,  # 最少上市多久，不满该K线根数的币剔除，即剔除刚刚上市的新币。168：标识168个小时，即：7*24
-    get_kline_num=get_kline_num,  # 获取多少根K线。这里跟策略日频和小时频影响。日线策略，代表多少根日线k。小时策略，代表多少根小时k
-    reserved_cache=['select'],  # 用于缓存控制：['select']表示只缓存选币结果，不缓存其他数据，['all']表示缓存所有数据。
-    # 目前支持选项：
-    # - select: 选币结果pkl
-    # - strategy: 大杂烩中策略选币pkl
-    # - all: 无视上述配置细节，包含 `all` 就代表我全要
-    # 缓存东西越多，硬盘消耗越大，对于参数比较多硬盘没那么大的童鞋，可以在这边设置
-)
-clean_start = True  # 启动是是否删除缓存。如果你不了解这个选项，保持为True，滥用缓存会有灾难性后果。
-
-# 配置实盘需要的额外数据
 data_source_dict = {
     # 数据源的标签: ('加载数据的函数名', '数据存储的绝对路径')
     # 说明：数据源的标签,需要与因子文件中的 extra_data_dict 中的 key 保持一致，数据存储的路径需要表达清楚
-    # 如果使用 BMAC，这里的路径就不需要配置
-    "coin-cap": ('load_coin_cap', Path(data_config['realtime_data_path']) / 'coin_cap',),
-    # 如果使用 BMAC，这里的路径就不需要配置
-    "coin-btc": ('load_coin_btc', Path(data_config['realtime_data_path']) / 'binance_spot_1h_resample',),
+    # 市值数据： https://www.quantclass.cn/data/coin/coin-cap
+    "coin-cap": ('load_coin_cap', '/Users/xxxx/Downloads/coin-cap',),
+    # 现货1h币对分类数据：https://www.quantclass.cn/data/coin/coin-binance-candle-csv-1h
+    # 也可以使用合约：https://www.quantclass.cn/data/coin/coin-binance-swap-candle-csv-1h
+    "coin-btc": ('load_coin_btc', '/Users/xxxx/Downloads/coin-binance-candle-csv-1h',),
 }
 
 # ====================================================================================================
 # ** 回测策略细节配置 **
 # 需要配置需要的策略以及遍历的参数范围
 # ====================================================================================================
-start_date = '2026-03-01 00:00:00'  # 回测开始时间
+start_date = '2026-01-01 00:00:00'  # 回测开始时间
 end_date = datetime.now().strftime('%Y-%m-%d %H:00:00')  # 回测结束时间  #JoyUpdated
 
 # ====================================================================================================
@@ -95,100 +65,56 @@ end_date = datetime.now().strftime('%Y-%m-%d %H:00:00')  # 回测结束时间  #
 backtest_name = '测试策略1'  # 回测的策略组合的名称。可以自己任意取。一般建议，一个回测组，就是实盘中的一个账户。
 """策略配置"""
 strategy_list = [
+    # === 低价币中性策略
     {
-        "strategy": "Strategy_大学生多头",
-        "offset_list": [0],
-        "hold_period": "1H",
-        "market": "mix_swap",
-        'cap_weight': 0.4,
+        # 策略名称。与strategy目录中的策略文件名保持一致。
+        "strategy": "Strategy_低价币多空策略",
+        "offset_list": list(range(0, 24, 1)),  # 只选部分offset[1, 3, 6]；
+        "hold_period": "24H",  # 小时级别可选1H到24H；也支持1D交易日级别
+        "is_use_spot": True,  # 多头支持交易现货；
+        # 资金权重。程序会自动根据这个权重计算你的策略占比
+        'cap_weight': 1,
+        'long_cap_weight': 1,  # 可以多空比例不同，多空不平衡对策略收益影响大
+        'short_cap_weight': 1,
+        # 选币数量
+        'long_select_coin_num': 0.1,  # 可适当减少选币数量，对策略收益影响大
+        'short_select_coin_num': 0.1,  # 四种形式：整数， 小数，'long_nums', 区间选币：(0.1, 0.2), (1, 3)
+        # 选币因子信息列表，用于2_选币_单offset.py，3_计算多offset资金曲线.py共用计算资金曲线
+        "factor_list": [
+            ('LowPrice', True, 168, 1),  # 多空因子名（和factors文件中相同），排序方式，参数，权重。支持多空分离，多空选币因子不一样；
+        ],
+        "filter_list": [
+            ('LowPrice', 168, 'rank:>1', False),  # 后置过滤filter_list_post，三种形式：pct, rank, val；支持多空分离，多空过滤因子不一样；
+        ],
+        "use_custom_func": False  # 使用系统内置因子计算、过滤函数
+    },
+    {
+        "strategy": "Strategy_中性",
+        "offset_list": range(0, 24, 1),
+        "hold_period": '24H',
+        "market": "swap_swap",
+        'cap_weight': 1,
         'long_cap_weight': 1,
-        'short_cap_weight': 0,
+        'short_cap_weight': 1,
         'long_select_coin_num': 0.1,
-        'short_select_coin_num': 0,
-        "factor_list": [
-            ('CirculatingMcap', True, 1, 1),
+        'short_select_coin_num': 0.1,
+        "long_factor_list": [
+            ('LowPrice', True, 360, 1),
         ],
-        "filter_list": [
-            ('ZfStd', 12, 'pct:<0.8'),
+        "long_filter_list": [
+            ('PctChange', 360, 'pct:<0.5'),
         ],
-        "use_custom_func": False,
-     },
-     {
-        "strategy": "Strategy_黄果树系列1",
-        "offset_list": [0],
-        "hold_period": "1H",
-        "market": "swap_swap",
-        'cap_weight': 0.21,
-        'long_cap_weight': 0,
-        'short_cap_weight': 1,
-        'long_select_coin_num': 0,
-        'short_select_coin_num': 0.5,
-        "factor_list": [
-            ('Cci', False, 576, 1),
+        "short_factor_list": [
+            ('LowPrice', True, 360, 1),
         ],
-        "filter_list": [
-            ('QuoteVolumeMean', 576, 'pct:<0.2', False),
+        "short_filter_list": [
+            ('Bias', 360, 'pct:<0.5'),
         ],
-        "use_custom_func": False,
-    },
-    {
-        "strategy": "Strategy_黄果树系列2",
-        "offset_list": [0],
-        "hold_period": "1H",
-        "market": "swap_swap",
-        'cap_weight': 0.07,
-        'long_cap_weight': 0,
-        'short_cap_weight': 1,
-        'long_select_coin_num': 0,
-        'short_select_coin_num': 0.5,
-        "factor_list": [
-            ('QuoteVolumeMean', True, 432, 1),
-        ],
-        "filter_list": [
-            ('Cci', 432, 'pct:<0.2'),
-        ],
-        "use_custom_func": False,
-    },
-    {
-        "strategy": "Strategy_黄果树系列3",
-        "offset_list": [0],
-        "hold_period": "1H",
-        "market": "swap_swap",
-        'cap_weight': 0.07,
-        'long_cap_weight': 0,
-        'short_cap_weight': 1,
-        'long_select_coin_num': 0,
-        'short_select_coin_num': 9999,
-        "factor_list": [
-            ('QuoteVolumeMean', True, 1, 1),
-        ],
-        "filter_list": [
-            ('MinMax', 240, 'pct:<0.15'),
-            ('QuoteVolumeMean', 240, 'pct:<0.15', False),
-        ],
-        "use_custom_func": False,
-     },
-     {
-        "strategy": "Strategy_落单狗",
-        "offset_list": [0],
-        "hold_period": "1H",
-        "market": "swap_swap",
-        "cap_weight": 0.15,
-        "long_cap_weight": 0,
-        "short_cap_weight": 1,
-        "long_select_coin_num": 0,
-        "short_select_coin_num": 0.5,
-        "factor_list": [
-            ('VolumeRatio', False, 825, 1),
-        ],
-        "filter_list": [
-            ('HoursSinceSpotAndSwap', 1, 'val:>0'),
-            ('CorrBTC', 825, 'pct:<0.1'),
-        ],
-        "use_custom_func": False,
+        "use_custom_func": False
     },
 ]
 
+min_kline_num = 168  # 最少上市多久，不满该K线根数的币剔除，即剔除刚刚上市的新币。168：标识168个小时，即：7*24
 black_list = ['BTC-USDT', 'ETH-USDT']  # 拉黑名单，永远不会交易。不喜欢的币、异常的币。例：LUNA-USDT, 这里与实盘不太一样，需要有'-'
 white_list = []  # 如果不为空，即只交易这些币，只在这些币当中进行选币。例：LUNA-USDT, 这里与实盘不太一样，需要有'-'
 
@@ -213,7 +139,7 @@ avg_price_col = 'avg_price_1m'  # 用于模拟计算的平均价，预处理数�
 # 这些设置是客观事实，基本不会影响到回测的细节
 # ====================================================================================================
 #job_num = max(os.cpu_count() - 1, 1)  # 回测并行数量 #JoyUpdated
-job_num = 1  # 回测并行数量
+job_num = 2  # 回测并行数量
 # ==== factor_col_limit 介绍 ====
 factor_col_limit = 64  # 内存优化选项，一次性计算多少列因子。64是 16GB内存 电脑的典型值
 # - 数字越大，计算速度越快，但同时内存占用也会增加。
